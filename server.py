@@ -1,5 +1,4 @@
-from fastapi import FastAPI, WebSocket
-from starlette import status
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 import uuid
 
 app = FastAPI()
@@ -10,8 +9,15 @@ async def websocket_endpoint(websocket:WebSocket):
     await websocket.accept()
     client_id = str(uuid.uuid4())
     connected_clients.add((client_id,websocket))
-    while True:
-        for cli_id,client in connected_clients:
-            data = websocket.receive_text()
-            if client_id != cli_id:
-                await client.send_text(data)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for cli_id, client in connected_clients:
+                if client_id != cli_id:
+                    await client.send_text(data)
+    except WebSocketDisconnect:
+        print("connection closed")
+        pass
+
+    finally:
+        connected_clients.remove((client_id,websocket))
