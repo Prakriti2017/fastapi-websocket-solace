@@ -1,0 +1,38 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+
+.read-the-docs {
+  color: #888;
+}
+
+.sent-message{
+  color:rgb(47, 0, 255);
+  border:2 solid white;
+  text-align: left;
+}
+
+.received-message{
+  color: #888;
+  border:2 solid white;
+  text-align: right;
+}
+
+.chat-form{
+  display: flex;
+  flex-direction: column;
+}
+
+input{
+    border-radius: 8px;
+    border: 1px solid black;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+
