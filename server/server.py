@@ -30,17 +30,17 @@ direct_receiver.start()
 
 direct_publisher.start()
 
-connected_clients = set()
-
-client_id = None
+connected_clients = {}
 
 app = FastAPI()
 
 @app.websocket("/")
 async def websocket_endpoint(websocket:WebSocket):
     await websocket.accept()
+
     client_id = str(uuid.uuid4())
-    connected_clients.add((client_id,websocket))
+
+    connected_clients[client_id] = websocket
 
     def run_solace():
         handler = MessageHandlerImpl(connected_clients)
@@ -53,14 +53,15 @@ async def websocket_endpoint(websocket:WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            direct_publisher.publish(destination=topic_publish, message=data)
+            message = messaging_service.message_builder().with_property("client_id", client_id).build(data)
+            direct_publisher.publish(destination=topic_publish, message=message)
 
     except WebSocketClose:
         print("connection closed")
         pass
 
     finally:
-        connected_clients.remove((client_id,websocket))
+        del connected_clients[client_id]
 
 class MessageHandlerImpl(MessageHandler):
     def __init__(self, connected_clients) -> None:
@@ -72,6 +73,8 @@ class MessageHandlerImpl(MessageHandler):
         if isinstance(payload,bytearray):
             payload = payload.decode()
         
-        for cli_id,client in self.connected_clients:
-            if cli_id != client_id:
-                self.loop.run_until_complete(client.send_text(payload))   
+        for cli_id,client in self.connected_clients.items():
+            if  cli_id!= message.get_property('client_id'):
+                self.loop.run_until_complete(client.send_text(payload))  
+
+
