@@ -5,16 +5,17 @@ function App() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState([])
   const [socket, setSocket] = useState(null)
+  const [port, setPort] = useState(8000)
 
   useEffect(() => {
 
-    const websocket = new WebSocket("ws://localhost:8000/")
+    const websocket = new WebSocket(`ws://localhost:${port}/`)
     setSocket(websocket)
 
     return () => {
       websocket.close()
     }
-  }, []
+  }, [port]
   )
 
   function onInputChange(e){
@@ -43,6 +44,16 @@ function App() {
 
   return (
     <div>
+    <div className='select-server'>
+      <form>
+        <label>Run on:</label>
+        <select onChange={(event)=>{setPort(event.target.value)}}>
+          <option value = "8080">Port 8080</option>
+          <option value = "8000">Port 8000</option>
+        </select>
+      </form>
+
+    </div>
         <div className='message-container'>
           {
             messages.map((message,i)=>(
