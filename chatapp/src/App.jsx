@@ -8,13 +8,13 @@ function App() {
 
   useEffect(() => {
 
-    const websocket = new WebSocket("ws://localhost:8000")
+    const websocket = new WebSocket("ws://localhost:8000/")
     setSocket(websocket)
 
     return () => {
       websocket.close()
     }
-  }, [port]
+  }, []
   )
 
   function onInputChange(e){
