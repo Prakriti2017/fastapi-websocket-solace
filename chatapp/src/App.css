@@ -13,13 +13,13 @@
 .sent-message{
   color:rgb(47, 0, 255);
   border:2 solid white;
-  text-align: left;
+  text-align: right;
 }
 
 .received-message{
   color: #888;
   border:2 solid white;
-  text-align: right;
+  text-align: left;
 }
 
 .chat-form{
